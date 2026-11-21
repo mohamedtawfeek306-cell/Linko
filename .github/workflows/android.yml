@@ -19,8 +19,10 @@ jobs:
           gradle-version: "8.9"
       - name: Build debug APK
         run: gradle assembleDebug
-      - name: Print debug signing fingerprints
-        run: keytool -list -v -keystore "$HOME/.android/debug.keystore" -storepass android -alias androiddebugkey | grep -E "SHA1:|SHA256:"
+      - name: Print APK signing fingerprints
+        run: |
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
+          "$APKSIGNER" verify --print-certs app/build/outputs/apk/debug/app-debug.apk | grep -E "SHA-1|SHA-256"
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
